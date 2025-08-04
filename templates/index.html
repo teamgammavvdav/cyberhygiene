@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberAlliance MUN | Digital Diplomacy v4.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="static/css/styles.css">
+    
+    <!-- Auth Modals -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i data-lucide="alert-triangle"></i> Authentication Required</h3>
+                <button class="modal-close" id="auth-modal-close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Please log in or create an account to register.</p>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button id="auth-modal-login-btn" class="btn btn-outline" style="width: 100%;">Login</button>
+                    <button id="auth-modal-signup-btn" class="btn btn-primary" style="width: 100%;">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i data-lucide="log-in"></i> Delegate Login</h3>
+                <button class="modal-close" id="login-modal-close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                </form>
+                <div id="login-form-message" class="form-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="signup-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i data-lucide="user-plus"></i> Create Account</h3>
+                <button class="modal-close" id="signup-modal-close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm-password">Confirm Password</label>
+                        <input type="password" id="signup-confirm-password" name="confirm_password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
+                </form>
+                <div id="signup-form-message" class="form-message"></div>
+            </div>
+        </div>
+    </div>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i data-lucide="shield-check"></i>
+                    <span>CyberAlliance MUN</span>
+                </a>
+                <div class="nav-links" id="nav-links">
+                    <a href="#home" class="nav-link">Home</a>
+                    <a href="#features" class="nav-link">Committees</a>
+                    <a href="#timeline" class="nav-link">Schedule</a>
+                    <a href="#resources" class="nav-link">Resources</a>
+                    <a href="#faq" class="nav-link">FAQ</a>
+                    <a href="#chat" class="nav-link">Chat</a>
+                </div>
+                <div id="user-state"></div>
+                <a id="register-btn" href="#register" class="btn btn-primary">
+                    <i data-lucide="user-plus"></i>
+                    Register Now
+                </a>
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Menu">
+                    <i data-lucide="menu"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div id="globe-container"></div>
+        <div class="container">
+            <div class="hero-content">
+                <span class="hero-badge">
+                    <i data-lucide="zap"></i> Next-Gen Cyber Diplomacy
+                </span>
+                <h1 class="hero-title animate-on-scroll fade-in">Where Digital Diplomacy Unfolds</h1>
+                <p class="hero-subtitle animate-on-scroll fade-in" style="transition-delay: 0.2s;">Experience cutting-edge cyber security scenarios, AI-powered negotiations, and real-time global collaboration in the world's most advanced MUN simulation.</p>
+                <div class="hero-cta animate-on-scroll fade-in" style="transition-delay: 0.4s;">
+                    <a href="#register" class="btn btn-primary">
+                        <i data-lucide="users"></i> Join the Alliance
+                    </a>
+                    <a href="#features" class="btn btn-outline">
+                        <i data-lucide="info"></i> Learn More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="stats" class="section">
+        <div class="container">
+            <div class="text-center mb-12 animate-on-scroll fade-in">
+                <h2 class="text-3xl font-bold">Global Impact by the Numbers</h2>
+                <p class="text-muted-foreground max-w-2xl mx-auto">Our platform connects future leaders from every corner of the world.</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item animate-on-scroll fade-in">
+                    <div class="stat-number" data-target="50">0</div>
+                    <div class="stat-label">Countries Represented</div>
+                </div>
+                <div class="stat-item animate-on-scroll fade-in" style="transition-delay: 0.1s;">
+                    <div class="stat-number" data-target="300">0</div>
+                    <div class="stat-label">Delegates Annually</div>
+                </div>
+                <div class="stat-item animate-on-scroll fade-in" style="transition-delay: 0.2s;">
+                    <div class="stat-number" data-target="12">0</div>
+                    <div class="stat-label">Hours of Debate</div>
+                </div>
+                <div class="stat-item animate-on-scroll fade-in" style="transition-delay: 0.3s;">
+                    <div class="stat-number" data-target="4">0</div>
+                    <div class="stat-label">Crisis Simulations</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <div class="text-center mb-12 animate-on-scroll fade-in">
+                <h2 class="text-3xl font-bold">Advanced Cyber Diplomacy Committees</h2>
+                <p class="text-muted-foreground max-w-2xl mx-auto">Four specialized committees tackling the most pressing challenges in digital governance and cyber security, inspired by the UNODC framework.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card animate-on-scroll fade-in">
+                    <div class="feature-icon"><i data-lucide="shield-off"></i></div>
+                    <h3 class="feature-title">Counter-Corruption Task Force</h3>
+                    <p class="feature-description">Tackle bribery, illicit financial flows, and develop transparent institutions, in line with SDG 16.</p>
+                </div>
+                <div class="feature-card animate-on-scroll fade-in" style="transition-delay: 0.1s;">
+                    <div class="feature-icon"><i data-lucide="users-2"></i></div>
+                    <h3 class="feature-title">Transnational Crime Council</h3>
+                    <p class="feature-description">Address trafficking, smuggling, and the nexus between organized crime and terrorism.</p>
+                </div>
+                <div class="feature-card animate-on-scroll fade-in" style="transition-delay: 0.2s;">
+                    <div class="feature-icon"><i data-lucide="wifi-off"></i></div>
+                    <h3 class="feature-title">Digital Threats Directorate</h3>
+                    <p class="feature-description">Debate responses to cyber-dependent crimes, online exploitation, and the use of the internet for illicit purposes.</p>
+                </div>
+                <div class="feature-card animate-on-scroll fade-in" style="transition-delay: 0.3s;">
+                    <div class="feature-icon"><i data-lucide="bomb"></i></div>
+                    <h3 class="feature-title">Terrorism Prevention Bureau</h3>
+                    <p class="feature-description">Develop strategies for countering violent extremism, foreign terrorist fighters, and the financing of terrorism.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Timeline Section -->
+    <section id="timeline" class="section">
+        <div class="container">
+            <div class="text-center mb-12 animate-on-scroll fade-in">
+                <h2 class="text-3xl font-bold">Conference Schedule</h2>
+                <p class="text-muted-foreground max-w-2xl mx-auto">Follow our action-packed agenda for the 3-day conference.</p>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item left animate-on-scroll fade-in"><div class="timeline-content"><h3>Day 1: Opening Ceremony</h3><p>Keynote addresses, committee introductions, and the official start of diplomatic sessions.</p></div></div>
+                <div class="timeline-item right animate-on-scroll fade-in"><div class="timeline-content"><h3>Day 1: Committee Session I</h3><p>Initial debates, position papers, and the formation of early blocs and alliances.</p></div></div>
+                <div class="timeline-item left animate-on-scroll fade-in"><div class="timeline-content"><h3>Day 2: Crisis Simulation</h3><p>A surprise real-time cyber crisis challenges delegations to react and adapt under pressure.</p></div></div>
+                <div class="timeline-item right animate-on-scroll fade-in"><div class="timeline-content"><h3>Day 2: Committee Session II</h3><p>Drafting resolutions, intense negotiations, and merging working papers.</p></div></div>
+                <div class="timeline-item left animate-on-scroll fade-in"><div class="timeline-content"><h3>Day 3: Final Voting</h3><p>Delegations vote on the final resolutions, shaping the outcome of the conference.</p></div></div>
+                <div class="timeline-item right animate-on-scroll fade-in"><div class="timeline-content"><h3>Day 3: Closing & Awards</h3><p>Recognizing outstanding delegates and celebrating a successful conference.</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources" class="section">
+        <div class="container">
+            <div class="text-center mb-12 animate-on-scroll fade-in">
+                <h2 class="text-3xl font-bold">Delegate Intelligence & Resources</h2>
+                <p class="text-muted-foreground max-w-2xl mx-auto">Equip yourself with essential knowledge from the UNODC resource library to excel in your committee.</p>
+            </div>
+            <div class="resources-grid">
+                <a href="#" class="resource-card animate-on-scroll fade-in">
+                    <div class="resource-icon"><i data-lucide="file-text" style="width: 48px; height: 48px;"></i></div>
+                    <h3>Anti-Corruption</h3>
+                    <p>Access guides on the UN Convention against Corruption and national strategies.</p>
+                </a>
+                <a href="#" class="resource-card animate-on-scroll fade-in" style="transition-delay: 0.1s;">
+                    <div class="resource-icon"><i data-lucide="book-open" style="width: 48px; height: 48px;"></i></div>
+                    <h3>Organized Crime</h3>
+                    <p>Study the Convention against Transnational Organized Crime and case digests.</p>
+                </a>
+                <a href="#" class="resource-card animate-on-scroll fade-in" style="transition-delay: 0.2s;">
+                    <div class="resource-icon"><i data-lucide="shield-alert" style="width: 48px; height: 48px;"></i></div>
+                    <h3>Cybercrime Studies</h3>
+                    <p>Read comprehensive studies on cybercrime and online child protection.</p>
+                </a>
+                <a href="#" class="resource-card animate-on-scroll fade-in" style="transition-delay: 0.3s;">
+                    <div class="resource-icon"><i data-lucide="folder-git-2" style="width: 48px; height: 48px;"></i></div>
+                    <h3>Terrorism Prevention</h3>
+                    <p>Review international instruments and criminal justice responses to terrorism.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section">
+        <div class="container">
+            <div class="text-center mb-12 animate-on-scroll fade-in">
+                <h2 class="text-3xl font-bold">Delegate's Field Manual: FAQ</h2>
+                <p class="text-muted-foreground max-w-2xl mx-auto">Key protocols and procedures for effective participation, based on official UN guidelines.</p>
+            </div>
+            <div class="faq-container animate-on-scroll fade-in">
+                <!-- FAQ items will be injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="section">
+        <div class="container">
+            <div class="text-center mb-12 animate-on-scroll fade-in">
+                <h2 class="text-3xl font-bold">Voices of the Alliance</h2>
+                <p class="text-muted-foreground max-w-2xl mx-auto">Hear what past delegates have to say about their experience.</p>
+            </div>
+            <div class="testimonial-slider animate-on-scroll fade-in">
+                <div class="testimonial-container" id="testimonial-container"></div>
+                <div class="slider-nav">
+                    <button class="slider-btn" id="prev-testimonial" aria-label="Previous Testimonial"><i data-lucide="arrow-left"></i></button>
+                    <button class="slider-btn" id="next-testimonial" aria-label="Next Testimonial"><i data-lucide="arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chat Section -->
+    <section id="chat" class="section">
+        <div class="container">
+            <div class="text-center mb-12 animate-on-scroll fade-in">
+                <h2 class="text-3xl font-bold">Diplomacy Chat Hub</h2>
+                <p class="text-muted-foreground max-w-2xl mx-auto">Connect with delegates, discuss strategies, and collaborate in real-time.</p>
+            </div>
+            <div class="chat-section animate-on-scroll fade-in">
+                <div class="chat-header"><h3 class="chat-title"><i data-lucide="message-circle"></i> Global Delegation Chat</h3></div>
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message bot"><div class="message-text">Welcome to CyberAlliance MUN chat! I'm your MUN Mentor. Ask me about procedures, country positions, or resolution drafting.</div><div class="message-time">10:05 AM</div></div>
+                    </div>
+                    <div class="chat-input-container">
+                        <textarea class="chat-input" id="messageInput" placeholder="Type your message..."></textarea>
+                        <button class="voice-input" id="voiceButton" aria-label="Voice Input">
+                            <i data-lucide="mic"></i>
+                        </button>
+                        <button class="chat-send" id="sendMessage">
+                            <i data-lucide="send"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <a href="#" class="logo mb-4" style="display: block;"><i data-lucide="shield-check"></i><span>CyberAlliance MUN</span></a>
+                    <p class="text-muted-foreground mt-4">Pioneering the future of digital diplomacy through immersive Model United Nations experiences.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link" aria-label="Twitter"><i data-lucide="twitter"></i></a>
+                        <a href="#" class="social-link" aria-label="LinkedIn"><i data-lucide="linkedin"></i></a>
+                        <a href="#" class="social-link" aria-label="GitHub"><i data-lucide="github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home"><i data-lucide="chevron-right"></i> Home</a></li>
+                        <li><a href="#features"><i data-lucide="chevron-right"></i> Committees</a></li>
+                        <li><a href="#resources"><i data-lucide="chevron-right"></i> Resources</a></li>
+                        <li><a href="#faq"><i data-lucide="chevron-right"></i> FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i data-lucide="chevron-right"></i> Research Library</a></li>
+                        <li><a href="#"><i data-lucide="chevron-right"></i> Diplomatic Guides</a></li>
+                        <li><a href="#"><i data-lucide="chevron-right"></i> Crisis Simulator</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <ul class="footer-links">
+                        <li><a href="mailto:info@cyberalliance-mun.org"><i data-lucide="mail"></i> info@cyberalliance-mun.org</a></li>
+                        <li><a href="#"><i data-lucide="map-pin"></i> Global Virtual Platform</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">&copy; 2024 CyberAlliance Model United Nations. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <!-- Registration Modal -->
+    <div id="registration-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i data-lucide="user-plus"></i> Delegate Registration</h3>
+                <button class="modal-close" id="modal-close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="registration-form">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="class">Class/Grade</label>
+                        <input type="text" id="class" name="class" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="school">School/Institution</label>
+                        <input type="text" id="school" name="school" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="committee">Committee Preference</label>
+                        <select id="committee" name="committee" required>
+                            <option value="">Select Committee</option>
+                            <option value="Counter-Corruption Task Force">Counter-Corruption Task Force</option>
+                            <option value="Transnational Crime Council">Transnational Crime Council</option>
+                            <option value="Digital Threats Directorate">Digital Threats Directorate</option>
+                            <option value="Terrorism Prevention Bureau">Terrorism Prevention Bureau</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="country">Country Preference</label>
+                        <input type="text" id="country" name="country" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i data-lucide="send"></i> Submit Registration
+                    </button>
+                </form>
+                <div id="form-message" class="form-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <a href="#home" id="back-to-top" aria-label="Back to top"><i data-lucide="arrow-up"></i></a>
+
+    <script src="static/js/script.js"></script>
+</body>
+</html>
