@@ -2,8 +2,9 @@
   "builds": [
     {
       "src": "app.py",
-      "use": "@vercel/python@3.9",
-      "config": { 
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.9",
         "maxLambdaSize": "15mb"
       }
     }
