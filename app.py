@@ -1,19 +1,28 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
 import google.generativeai as genai
-import speech_recognition as sr
 import requests
 import os
 import re
-from datetime import datetime
+import sys
 
 # --- App Initialization and Configuration ---
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key_here')
-basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'users.db')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'Rajput 2008')
+
+# Configure database based on environment
+if 'POSTGRES_URL' in os.environ:
+    # PostgreSQL configuration for Vercel
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['POSTGRES_URL'].replace("postgres://", "postgresql://")
+    print("Using PostgreSQL database")
+else:
+    # SQLite configuration for local development
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'users.db')
+    print("Using SQLite database")
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # --- Extensions Initialization ---
@@ -23,13 +32,18 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'unauthorized'
 
 # --- Gemini API Configuration ---
-API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyB5hky466Msa9L8OrGHYHyBfmDLdTBL0lg")
-try:
-    genai.configure(api_key=API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash')
-except Exception as e:
-    print(f"Error configuring Gemini API: {e}")
-    model = None
+API_KEY = os.environ.get("GEMINI_API_KEY", "your-default-api-key")
+model = None
+if API_KEY:
+    try:
+        genai.configure(api_key=API_KEY)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        print("Gemini API initialized successfully")
+    except Exception as e:
+        print(f"Error configuring Gemini API: {e}")
+        model = None
+else:
+    print("GEMINI_API_KEY environment variable not set")
 
 # --- Google Sheets Configuration ---
 GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytaAItpV0neRaA8QbK470fWFXmdRDwQ4-JigxB3eLLRPMuY_FzKp6upD2LHPJUHVNNqg/exec"
@@ -49,6 +63,18 @@ class User(UserMixin, db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+# Initialize database
+def initialize_database():
+    with app.app_context():
+        try:
+            db.create_all()
+            print("Database tables initialized")
+        except Exception as e:
+            print(f"Database initialization error: {str(e)}")
+
+# Initialize immediately
+initialize_database()
 
 # --- MUN Helper Functions ---
 MUN_RESOURCES = {
@@ -83,22 +109,6 @@ def get_mun_response(user_input, user_id):
         return response.text.strip()
     except Exception as e:
         return f"I'm having trouble responding right now. Please try again later. ({str(e)})"
-
-def recognize_speech():
-    """Speech recognition for MUN preparation"""
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        print("Listening for MUN speech practice...")
-        recognizer.adjust_for_ambient_noise(source, duration=0.5)
-        try:
-            audio = recognizer.listen(source, timeout=8)
-            return recognizer.recognize_google(audio)
-        except sr.WaitTimeoutError:
-            return "Error: Listening timed out"
-        except sr.UnknownValueError:
-            return "Error: Could not understand audio"
-        except sr.RequestError as e:
-            return f"Error: Speech service unavailable ({str(e)})"
 
 # --- Main Routes ---
 @app.route('/')
@@ -169,24 +179,11 @@ def chat_route():
     response = get_mun_response(user_input, current_user.id)
     return jsonify({'response': response})
 
-@app.route('/voice', methods=['POST'])
-@login_required
-def voice_input():
-    try:
-        text = recognize_speech()
-        if text.startswith("Error:"):
-            return jsonify({'response': text})
-        response = get_mun_response(text, current_user.id)
-        return jsonify({'response': response, 'text': text})
-    except Exception as e:
-        return jsonify({'response': f"Voice processing error: {str(e)}"})
-
 @app.route('/register', methods=['POST'])
 @login_required
 def register_route():
     try:
         data = request.json
-        # Add authenticated user's email to registration data
         data['email'] = current_user.email
         
         # Send data to Google Sheets
@@ -206,8 +203,14 @@ def get_resources():
 def get_procedures():
     return jsonify(MUN_PROCEDURES)
 
-# --- App Execution ---
-if __name__ == '__main__':
+# --- Serverless Entry Point ---
+def vercel_handler(request):
+    # For Vercel serverless environment
+    from flask import make_response
     with app.app_context():
-        db.create_all()  # Creates the users.db file and tables if they don't exist
+        response = app.full_dispatch_request()()
+        return make_response(response)
+
+# --- Local Execution ---
+if __name__ == '__main__':
     app.run(debug=True, port=5000)
