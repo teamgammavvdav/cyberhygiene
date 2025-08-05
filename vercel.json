@@ -15,3 +15,16 @@
     }
   ]
 }
+
+{
+  "builds": [
+    {
+      "src": "flask_main.py",
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.11",
+        "installCommand": "pip install --no-cache-dir -r requirements.txt"
+      }
+    }
+  ]
+}
