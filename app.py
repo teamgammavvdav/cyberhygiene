@@ -1,3 +1,9 @@
+# Add this at the very top before other imports
+import sys
+sys.modules['pocketsphinx'] = None  # Workaround for Vercel
+
+# Then your other imports...
+
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
